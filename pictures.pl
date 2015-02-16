@@ -2,6 +2,8 @@
 
 require "finddrive.pl";
 
+use Getopt::Std;
+
 use File::Find ();
 use vars qw/*name *dir *prune/;
 *name   = *File::Find::name;
@@ -16,7 +18,8 @@ $lastcopytime=time;
 @nummon = qw ( Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec );
 
 $doall = 0;
-if ($ARGV[0] eq "-a") { 
+getopts("an",\%opts);
+if ($opts{"a"}) { 
     print "Will scan all pictures\n";
     $doall=1; 
 }
@@ -49,6 +52,10 @@ unless (-e $srcdir) {
 if ($ARGV[0] eq "-q") { exit; }
 
 &processdir($srcdir);
+
+if ($opts{"n"}) {
+    system("./netCopyPictures.pl");
+}
 
 sub wanted {
     next unless (-f $name);
