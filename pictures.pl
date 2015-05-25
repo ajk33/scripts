@@ -9,7 +9,8 @@ use vars qw/*name *dir *prune/;
 *name   = *File::Find::name;
 *dir    = *File::Find::dir;
 *prune  = *File::Find::prune;
-    use Image::ExifTool ':Public';
+use File::Copy;
+use Image::ExifTool ':Public';
 
 $count;
 $lastcopytime=time;
@@ -60,6 +61,7 @@ if ($opts{"n"}) {
 sub wanted {
     next unless (-f $name);
     next if ($name =~ m/.*\.THM/i); # Don't need these
+    next if ($name =~ m/.*\.MP4/i); # Don't need these
     print ".";
     ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,
         $atime,$mtime,$ctime,$blksize,$blocks)
@@ -149,7 +151,7 @@ sub process {
     print "$file($ssize,$smtime)\n=>$linkname($dsize,$dmtime)\t";
     unless (-e $linkname && $dsize == $ssize && ($smtime > $dmtime-3601 && $smtime < $dmtime+3601)) {
 #        symlink($file,$linkname);
-        system("cp \"$file\" \"$linkname\"");
+        copy($file,$linkname) or die "Can't copy $file to $linkname";
         print "copied\n";
         $skipcount=0;
     } else {
