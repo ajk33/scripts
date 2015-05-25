@@ -4,6 +4,7 @@
 require "finddrive.pl";
 use Filesys::CygwinPaths ':all';
 use POSIX qw(tzset);
+use File::Copy;
 $ENV{TZ} = 'EST+4';
 tzset;
 
@@ -82,7 +83,8 @@ sub process {
   print "$file($ssize,$smtime) ".scalar (localtime($mtime))."\n=>$linkname($dsize,$dmtime)\t";
   unless (-e $linkname && $dsize == $ssize && ($smtime > $dmtime-3700 && $smtime < $dmtime+3700)) {
 #        symlink($file,$linkname);
-    while( system("cp \"$file\" \"$linkname\"")) { print " trying again..\n"; sleep 1;}
+    #while( system("cp \"$file\" \"$linkname\"")) { print " trying again..\n"; sleep 1;}
+    copy($file,$linkname) or die "Can't copy $file to $linkname";
     print "copied\n";
   } else {
     print "Skipped\n"; 
