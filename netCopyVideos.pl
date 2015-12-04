@@ -36,7 +36,7 @@ print "$twomonthsago\n";
 @nummon = qw ( Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec );
 
 $srcdir = "/cygdrive/n/Camcorder";
-$srcdir2 = "/cygdrive/n/HDCamcorder";
+$srcdir2 = "/cygdrive/g/HDCamcorder";
 if ($portabledrive eq "") {
    print "Can't find the portable drive";
    exit;
