@@ -26,6 +26,12 @@ if ($opts{"a"}) {
 }
 
 $srcdir="$cameradrive/DCIM/";
+print "$srcdir\n";
+if (! -e $srcdir) {
+  $cameradrive = $blackberry;
+  $srcdir = "$blackberry/camera/";
+  print "$srcdir\n";
+}
 $dstdir = "$portabledrive/Our\ Pictures";
 $dst2dir = "$nas2drive/Our\ Pictures";
 
@@ -61,7 +67,7 @@ if ($opts{"n"}) {
 sub wanted {
     next unless (-f $name);
     next if ($name =~ m/.*\.THM/i); # Don't need these
-    next if ($name =~ m/.*\.MP4/i); # Don't need these
+    next if ($blackberry != "" && $name =~ m/.*\.MP4/i); # Don't need these
     print ".";
     ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,
         $atime,$mtime,$ctime,$blksize,$blocks)
