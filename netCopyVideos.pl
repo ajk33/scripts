@@ -2,7 +2,7 @@
 #
 
 require "finddrive.pl";
-use Filesys::CygwinPaths ':all';
+#use Filesys::CygwinPaths ':all';
 use POSIX qw(tzset);
 use File::Copy;
 $ENV{TZ} = 'EST+4';
