@@ -24,8 +24,8 @@ if ($opts{"c"}) {
   $srcdrv = "Camera";
   $srcdir = $cameradrive;
 }
-if ($srcdir == "") {
-  die "Can't find $srcdrv drive";
+if ($srcdir eq "") {
+  die "Can't find $srcdrv drive $srcdir";
 } 
 
 sub getfreespace {
@@ -47,7 +47,7 @@ sub process {
   my $file = @_[1];
   ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime($mtime); 
   unlink($file);
-  print "$file $year/$mon/$mday ".getfreespace()."%\n";
+  print "$file ".($year+1900)."/$mon/$mday ".getfreespace()."%\n";
 }
 
 do {
