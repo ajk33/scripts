@@ -6,6 +6,7 @@ require "finddrive.pl";
 use POSIX qw(tzset);
 use File::Copy;
 use Filesys::Df;
+use Getopt::Std;
 
 $ENV{TZ} = 'EST+4';
 tzset;
@@ -16,7 +17,16 @@ use vars qw/*name *dir *prune/;
 *dir    = *File::Find::dir;
 *prune  = *File::Find::prune;
 
+$srcdrv = "HD Camcorder";
 $srcdir = $hdcamcorderdrive;
+getopts("c",\%opts);
+if ($opts{"c"}) {
+  $srcdrv = "Camera";
+  $srcdir = $cameradrive;
+}
+if ($srcdir == "") {
+  die "Can't find $srcdrv drive";
+} 
 
 sub getfreespace {
   return df($srcdir)->{per};
@@ -37,7 +47,7 @@ sub process {
   my $file = @_[1];
   ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime($mtime); 
   unlink($file);
-  print "$file ".getfreespace()."%\n";
+  print "$file $year/$mon/$mday ".getfreespace()."%\n";
 }
 
 do {
