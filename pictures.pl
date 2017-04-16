@@ -14,38 +14,46 @@ use Image::ExifTool ':Public';
 
 $count;
 $lastcopytime=time;
+$phonedrive = "/cygdrive/d/Phone_Pictures/";
 
 %monnum = qw ( Jan 01 Feb 02 Mar 03 Apr 04 May 05 Jun 06 Jul 07 Aug 08 Sep 09 Oct 10 Nov 11 Dec 12 );
 @nummon = qw ( Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec );
 
 $doall = 0;
-getopts("an",\%opts);
+getopts("anp",\%opts);
 if ($opts{"a"}) { 
     print "Will scan all pictures\n";
     $doall=1; 
 }
 
 $srcdir="$cameradrive/DCIM/";
-print "$srcdir\n";
+
+if ($opts{"p"}) { 
+  $cameradrive = "/cygdrive/d/";
+  $srcdir=$phonedrive;
+}
+
+print "\n\$srcdir = $srcdir\n";
 if (! -e $srcdir) {
   $cameradrive = $blackberry;
   $srcdir = "$blackberry/camera/";
   print "$srcdir\n";
 }
-$dstdir = "$portabledrive/Our\ Pictures";
-$dst2dir = "$nas2drive/Our\ Pictures";
-
-if ($portabledrive eq "") {
-    print "Cannot find portable drive\n"; 
-    &sync;
-    exit;
-}
+$dstdir = "$nas2drive/Our\ Pictures";
+$dst2dir = "$portabledrive/Our\ Pictures";
 
 if ($cameradrive eq "") {
     print "Cannot find camera drive\n"; 
     &sync;
     exit;
 }
+
+if ($nas2drive eq "") {
+    print "Cannot find NAS 2 drive\n"; 
+    &sync;
+    exit;
+}
+
 
 unless (-e $srcdir) {
     $srcdir="$cameradrive/home/user/camera";
@@ -88,13 +96,13 @@ sub genmonth {
 
 sub sync {
     if ($nas2drive eq "") {
-        print "Cannot find second nas drive\n"; 
+        print "Cannot find portable drive\n"; 
         exit;
     }
     $dstdir=~ s/ /\\ /g;
-    $dstdir.="/";
     $dst2dir=~ s/ /\\ /g;
-    print "Syncing pictures to NAS\n";
+    $dst2dir.="/";
+    print "Syncing pictures to portable drive\n";
     ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime($lastcopytime);
     ($sec,$min,$hour,$mday,$cmon,$cyear,$wday,$yday,$isdst) = localtime(time);
     $year+=1900;
@@ -108,7 +116,7 @@ sub sync {
         $command="mkdir -p $dst2dir/$year/$subdir";
         print $command."\n";
         system($command);
-        $command="rsync -avP $dstdir$year/$subdir/ $dst2dir/$year/$subdir";
+        $command="rsync -avP $dstdir/$year/$subdir/ $dst2dir/$year/$subdir";
         print $command."\n";
         system($command);
         $mon++;
