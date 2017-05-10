@@ -16,21 +16,25 @@ use vars qw/*name *dir *prune/;
 
 print "TZ=".$ENV{'TZ'}."\n";
 $drive = "s";
+# Only consider last 2 months
+$twomonthsago = (int((time-60*86400)/86400))*86400;
+$oneyearago = (int((time-365*86400)/86400))*86400;
+
+my $timeframe = $twomonthsago;
+
 my $checkall=0;
 while (@ARGV) {
 	$opt = pop @ARGV;
 	if ($opt eq "-a") {
 		$checkall = 1;
+	} elsif ($opt eq "-y") {
+     $timeframe = $oneyearago;
 	} elsif ($opt eq "-b") {
      $backward = 1;
 	} else {
 		$drive = $opt;
 	}
 }
-
-# Only consider last 2 months
-$twomonthsago = (int((time-60*86400)/86400))*86400;
-print "$twomonthsago\n";
 
 %monnum = qw ( Jan 01 Feb 02 Mar 03 Apr 04 May 05 Jun 06 Jul 07 Aug 08 Sep 09 Oct 10 Nov 11 Dec 12 );
 @nummon = qw ( Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec );
@@ -58,7 +62,7 @@ sub process {
   my $file = @_[1];
   ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime($mtime); 
   $year+=1900;
-  return if ($mtime < $twomonthsago && !$checkall);
+  return if ($mtime < $timeframe && !$checkall);
   $smon = $mon+1;
   if ($smon < 10) { $smon = "0".$smon; }
   if ($mday < 10) { $mday = "0".$mday; }
@@ -110,6 +114,6 @@ do {
   foreach $time (sort { $a <=> $b } keys %fileList) {
          process($time,$fileList{$time});
   }
-  $twomonthsago-=(86400*30);
+  $timeframe-=(86400*30);
 } while ($backward);
 exit;
